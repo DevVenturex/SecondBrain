@@ -12,7 +12,7 @@ async fn main() -> Result<(), std::io::Error> {
             tracing_subscriber::fmt::layer()
                 .json()
                 .with_target(true)
-                .with_current_span(true)   
+                .with_current_span(true),
         )
         .with(tracing_subscriber::EnvFilter::new(
             std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
