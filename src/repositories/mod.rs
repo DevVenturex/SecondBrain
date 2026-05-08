@@ -2,13 +2,13 @@ use crate::models::Model;
 
 pub mod tickets;
 
-pub trait Repository<M>
+pub trait Repository<M>: Send + Sync
 where 
-    M: Model,
+    M: Model + Send + Sync,
 {
-    async fn insert(&self, value: M::Insert) -> M;
-    async fn find(&self, value: M::Find) -> Vec<M>;
-    async fn update(&self, value: M::Update) -> M;
-    async fn delete(&self, value: M::Delete) -> M;
-    async fn get_all(&self) -> Vec<M>;
+    fn insert(&self, value: M::Insert) -> impl Future<Output = Option<M>> + Send;
+    fn find(&self, value: M::Find) -> impl Future<Output = Vec<M>> + Send;
+    fn update(&self, value: M::Update) -> impl Future<Output = Option<M>> + Send;
+    fn delete(&self, value: M::Delete) -> impl Future<Output = Option<M>> + Send;
+    fn get_all(&self) -> impl Future<Output = Vec<M>> + Send;
 }
