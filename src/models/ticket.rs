@@ -1,54 +1,40 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use surrealdb::types::{RecordId, SurrealValue, Value};
 
-use crate::models::*;
+#[derive(Debug, Clone, Serialize, Deserialize, SurrealValue)]
+pub struct Record {
+    pub id: RecordId,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, SurrealValue)]
 pub struct Ticket {
-    pub id: u64,
     pub title: String,
     pub description: Option<String>,
     pub created_at: chrono::DateTime<Utc>,
     pub updated_at: chrono::DateTime<Utc>,
 }
 
-impl Model for Ticket {
-    type Insert = CreateTicket;
-
-    type Find = FindTicket;
-
-    type Update = UpdateTicket;
-
-    type Delete = DeleteTicket;
-}
-
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct CreateTicket {
     pub title: String,
     pub description: Option<String>,
 }
 
-impl Insertable for CreateTicket {}
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct FindTicket {
-    pub id: u64,
+    pub id: RecordId,
 }
 
-impl Findable for FindTicket {}
-
-#[derive(Debug)]
+#[derive(Debug, Clone, SurrealValue, Serialize, Deserialize, PartialEq)]
 pub struct UpdateTicket {
-    pub id: u64,
+    pub id: RecordId,
     pub title: Option<String>,
     pub description: Option<String>,
 }
 
-impl Updatable for UpdateTicket {}
-
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct DeleteTicket {
-    pub id: u64,
+    pub id: RecordId,
 }
-
-impl Deletable for DeleteTicket {}
