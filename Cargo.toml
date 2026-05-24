@@ -3,20 +3,19 @@ name = "second-brain"
 version = "0.1.0"
 edition = "2024"
 
+[lints.rust]
+unsafe_code = "forbid"
+
 [dependencies]
-async-trait = "0.1.89"
 axum = { version = "0.8.9", features = ["macros"] }
 chrono = { version = "0.4.44", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
-surrealdb = "3.0.5"
 thiserror = "2.0.18"
-tokio = { version = "1.52.2", features = ["full"] }
-tower = { version = "0.5.3", features = ["full"] }
-tower-http = { version = "0.6.10", features = ["cors", "compression-gzip", "timeout", "trace", "fs", "limit"] }
+tokio = { version = "1.52.3", features = ["full"] }
+uuid = { version = "1.23.1", features = ["v4"] }
+async-trait = "0.1.89"
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
-
-[dev-dependencies]
-mockall = "0.14.0"
-surrealdb = { version = "3.0.5", features = ["kv-mem"] }
+tracing-subscriber = { version = "0.3.23", features = ["chrono", "env-filter", "json"] }
+tower = { version = "0.5.3", features = ["full"] }
+tower-http = { version = "0.6.11", features = ["cors", "compression-gzip", "timeout", "trace", "fs", "limit"] }

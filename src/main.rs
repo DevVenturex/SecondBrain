@@ -1,7 +1,12 @@
-use std::net::SocketAddr;
+use std::sync::Arc;
 
 use axum::Router;
-use second_brain::{AppState, Error, routes};
+use second_brain::{
+    api,
+    app_state::{AppState, TicketState},
+    application::StoreTicketService,
+    error::Error,
+};
 use tokio::net::TcpListener;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -15,22 +20,20 @@ async fn main() -> Result<(), Error> {
                 .with_target(true)
                 .with_current_span(true),
         )
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
+        .with(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
-    let app_state = AppState::new("127.0.0.1:8000").await?;
-
-    let router = Router::new()
-        .merge(routes(app_state))
+    let ticket_service = StoreTicketService::new().await?;
+    let app_state = AppState {
+        tickets: TicketState::new(Arc::new(ticket_service)).await,
+    };
+    let app = Router::new()
+        .merge(api::routes(app_state))
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
-    let listener = TcpListener::bind(addr).await?;
+    let listener = TcpListener::bind("127.0.0.1:8080").await?;
 
-    tracing::info!("Server running on http://{addr}");
-    axum::serve(listener, router).await?;
+    axum::serve(listener, app).await?;
     Ok(())
 }
