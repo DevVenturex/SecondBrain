@@ -58,3 +58,7 @@ rust-project.json
 
 .vscode/
 surrealdata/
+
+# Added by cargo
+
+/target
